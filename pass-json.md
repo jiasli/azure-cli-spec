@@ -4,7 +4,7 @@
 
 The goal is to facilitate the interaction between commands, like how PowerShell [uses variables to store objects](https://docs.microsoft.com/en-us/powershell/scripting/learn/using-variables-to-store-objects).
 
-For example, PowerShell CmdLet [Add-AzVirtualNetworkSubnetConfig](https://docs.microsoft.com/en-us/powershell/module/Az.Network/Add-AzVirtualNetworkSubnetConfig) takes `-VirtualNetwork <PSVirtualNetwork>`. See [Create a virtual network using PowerShell](https://docs.microsoft.com/en-us/azure/virtual-network/quick-create-powershell#create-a-resource-group-and-a-virtual-network). 
+For example, PowerShell CmdLet [Add-AzVirtualNetworkSubnetConfig](https://docs.microsoft.com/en-us/powershell/module/Az.Network/Add-AzVirtualNetworkSubnetConfig) takes `-VirtualNetwork <PSVirtualNetwork>`. See [Create a virtual network using PowerShell](https://docs.microsoft.com/en-us/azure/virtual-network/quick-create-powershell#create-a-resource-group-and-a-virtual-network).
 
 ```powershell
 $virtualNetwork = New-AzVirtualNetwork -ResourceGroupName rg1 -Name vnet1 -Location WestUS -AddressPrefix 10.0.0.0/16
@@ -75,7 +75,7 @@ Variable style doesn't work well with PowerShell due to a bug in PowerShell. See
 https://www.gnu.org/software/bash/manual/html_node/Pipelines.html
 
 ```bash
-az network vnet subnet show -g rg1 --vnet-name vnet1 --name subnet1 
+az network vnet subnet show -g rg1 --vnet-name vnet1 --name subnet1
     | az storage account network-rule add -g rg1 --account-name st0507 --subnet @-
 ```
 
@@ -86,10 +86,10 @@ https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/abo
 As symbol `@` is interpreted by PowerShell as [splatting symbol](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_splatting), so quote it or escape it.
 
 ```powershell
-az network vnet subnet show -g rg1 --vnet-name vnet1 --name subnet1 
+az network vnet subnet show -g rg1 --vnet-name vnet1 --name subnet1
     | az storage account network-rule add -g rg1 --account-name st0507 --subnet '@-'
 
-az network vnet subnet show -g rg1 --vnet-name vnet1 --name subnet1 
+az network vnet subnet show -g rg1 --vnet-name vnet1 --name subnet1
     | az storage account network-rule add -g rg1 --account-name st0507 --subnet `@-
 ```
 
@@ -105,29 +105,29 @@ Some problems can emerge with this approach:
                                   --vnet-name "$vnet"
                                   --name subnet1
     ```
-    
+
     Possible solutions:
 
     1. Support `--vnet` which takes a resource ID by itself, like
         ```bash
-        az network vnet subnet create --vnet /subscriptions/0b1f6471-1bf0-4dda-aec3-cb9272f09590/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworks/vnet1 
+        az network vnet subnet create --vnet /subscriptions/0b1f6471-1bf0-4dda-aec3-cb9272f09590/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworks/vnet1
                                       --name subnet1
         ```
         This solution is perhaps the best.
     2. Pass the JSON twice to the following command, like
         ```bash
-        az network vnet subnet create --resource-group "$vnet" 
+        az network vnet subnet create --resource-group "$vnet"
                                       --vnet-name "$vnet"
                                       --name subnet1
         ```
-        This solution is verbose and counterintuitive. 
+        This solution is verbose and counterintuitive.
 - This can conflict with the newly introduced local context which may automatically populate `--resource-group` and `--vnet-name`
 
 ## Appendix
 
-### Quoting issue with PowerShell 
+### Quoting issue with PowerShell
 
-Due to issue https://github.com/PowerShell/PowerShell/issues/1995, double quotes within the JSON string are lost when calling a native `.exe` file. 
+Due to issue https://github.com/PowerShell/PowerShell/issues/1995, double quotes within the JSON string are lost when calling a native `.exe` file.
 
 ```powershell
 # Note that the double quotes are lost

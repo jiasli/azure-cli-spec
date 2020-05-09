@@ -4,7 +4,7 @@ The idea of `az select` is to select the prefix of an **Azure resource ID**, so 
 
 For instance, with prefix `/subscriptions/0b1f6471-1bf0-4dda-aec3-cb9272f09590/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworks/vnet1`,
 
-- `--resource-group` will be populated as `rg1` 
+- `--resource-group` will be populated as `rg1`
 - `--vnet-name` will be populated as `vnet1`
 
 It can be considered as a manual alternative to `az local-context`. Difference:
@@ -32,20 +32,20 @@ Creating a resource doesn't by default switch the prefix, it is still `/subscrip
 `--resource-group` will be automatically populated from the selected prefix as `rg1`.
 
 ```sh
-> az vnet create --name vnet1
+> az network vnet create --name vnet1
 {
     "id": "/subscriptions/0b1f6471-1bf0-4dda-aec3-cb9272f09590/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworks/vnet1",
     "name": "vnet1",
     ...
 }
-WARNING: To create resource within this vnet, you may want to run `az vnet select --name vnet1`
+WARNING: To create sub-resources within this vnet, you may want to run `az network vnet select --name vnet1`
 
 # Without prefix
-> az network vnet create --resource-group rg1 
+> az network vnet create --resource-group rg1
                          --name vnet1
 
 # Without prefix, use resource group id (not supported yet, only a proposal)
-> az network vnet create --resource-group /subscriptions/0b1f6471-1bf0-4dda-aec3-cb9272f09590/resourceGroups/rg1 
+> az network vnet create --resource-group /subscriptions/0b1f6471-1bf0-4dda-aec3-cb9272f09590/resourceGroups/rg1
                          --name vnet1
 
 # Without prefix, use resource group JSON (not supported yet, only a proposal)
@@ -57,12 +57,12 @@ WARNING: To create resource within this vnet, you may want to run `az vnet selec
 
 ```sh
 # Select by name, depending on the current prefix
-> az vnet select --name vnet1
+> az network vnet select --name vnet1
 WARNING: Switched to /subscriptions/0b1f6471-1bf0-4dda-aec3-cb9272f09590/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworks/vnet1
 
 # Select by absolute path
-> az vnet select --resource-group rg1
-                 --name vnet1
+> az network vnet select --resource-group rg1
+                         --name vnet1
 WARNING: Switched to /subscriptions/0b1f6471-1bf0-4dda-aec3-cb9272f09590/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworks/vnet1
 
 # Select by resource ID
@@ -84,8 +84,8 @@ Creating a sub-resource doesn't by default switch the prefix either. It is still
 }
 
 # Without prefix
-> az network vnet subnet create --resource-group rg1 
-                                --vnet-name vnet1 
+> az network vnet subnet create --resource-group rg1
+                                --vnet-name vnet1
                                 --name subnet1
 
 # Without prefix, use vnet id (not supported yet, only a proposal)
