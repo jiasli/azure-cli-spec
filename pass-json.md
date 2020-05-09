@@ -23,12 +23,12 @@ With CLI in Bash:
 ```bash
 # Prepare resources
 az group create -g rg1 -l westus
-az network vnet create -g rg1 -n vnet1
-az network vnet subnet create -g rg1 --vnet-name vnet1 -n subnet1 --address-prefixes 10.0.0.0/24 --service-endpoints  Microsoft.Storage
-az storage account create -g rg1 -n st0507
+az network vnet create -g rg1 --name vnet1
+az network vnet subnet create -g rg1 --vnet-name vnet1 --name subnet1 --address-prefixes 10.0.0.0/24 --service-endpoints  Microsoft.Storage
+az storage account create -g rg1 --name st0507
 
 # Add the created subnet to storage account's network rule
-subnet=$(az network vnet subnet show -g rg1 --vnet-name vnet1 -n subnet1 --query id --output tsv)
+subnet=$(az network vnet subnet show -g rg1 --vnet-name vnet1 --name subnet1 --query id --output tsv)
 az storage account network-rule add -g rg1 --account-name st0507 --subnet $subnet
 ```
 
@@ -58,7 +58,7 @@ Then we can pipe the output JSON to the next command with either **variable styl
 https://www.gnu.org/software/bash/manual/html_node/Shell-Parameters.html
 
 ```bash
-subnet=$(az network vnet subnet show -g rg1 --vnet-name vnet1 -n subnet1)
+subnet=$(az network vnet subnet show -g rg1 --vnet-name vnet1 --name subnet1)
 az storage account network-rule add -g rg1 --account-name st0507 --subnet "$subnet"
 ```
 
@@ -75,7 +75,8 @@ Variable style doesn't work well with PowerShell due to a bug in PowerShell. See
 https://www.gnu.org/software/bash/manual/html_node/Pipelines.html
 
 ```bash
-az network vnet subnet show -g rg1 --vnet-name vnet1 -n subnet1 | az storage account network-rule add -g rg1 --account-name st0507 --subnet @-
+az network vnet subnet show -g rg1 --vnet-name vnet1 --name subnet1 
+    | az storage account network-rule add -g rg1 --account-name st0507 --subnet @-
 ```
 
 #### PowerShell
@@ -85,8 +86,11 @@ https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/abo
 As symbol `@` is interpreted by PowerShell as [splatting symbol](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_splatting), so quote it or escape it.
 
 ```powershell
-az network vnet subnet show -g rg1 --vnet-name vnet1 -n subnet1 | az storage account network-rule add -g rg1 --account-name st0507 --subnet '@-'
-az network vnet subnet show -g rg1 --vnet-name vnet1 -n subnet1 | az storage account network-rule add -g rg1 --account-name st0507 --subnet `@-
+az network vnet subnet show -g rg1 --vnet-name vnet1 --name subnet1 
+    | az storage account network-rule add -g rg1 --account-name st0507 --subnet '@-'
+
+az network vnet subnet show -g rg1 --vnet-name vnet1 --name subnet1 
+    | az storage account network-rule add -g rg1 --account-name st0507 --subnet `@-
 ```
 
 More information about quoting can be found at https://github.com/Azure/azure-cli/blob/dev/doc/use_cli_effectively.md#quoting-issues
@@ -97,19 +101,24 @@ Some problems can emerge with this approach:
 
 - The JSON can't be used to populate multiple parameters. For example, populating `--resource-group` and `--vnet-name` when a vnet JSON is provided:
     ```bash
-    az network vnet subnet create --resource-group rg1 --vnet-name $vnet -n subnet1
+    az network vnet subnet create --resource-group rg1
+                                  --vnet-name "$vnet"
+                                  --name subnet1
     ```
     
     Possible solutions:
 
     1. Support `--vnet` which takes a resource ID by itself, like
         ```bash
-        az network vnet subnet create --vnet /subscriptions/0b1f6471-1bf0-4dda-aec3-cb9272f09590/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworks/vnet1 -n subnet1
+        az network vnet subnet create --vnet /subscriptions/0b1f6471-1bf0-4dda-aec3-cb9272f09590/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworks/vnet1 
+                                      --name subnet1
         ```
         This solution is perhaps the best.
     2. Pass the JSON twice to the following command, like
         ```bash
-        az network vnet subnet create --resource-group $vnet --vnet-name $vnet -n subnet1
+        az network vnet subnet create --resource-group "$vnet" 
+                                      --vnet-name "$vnet"
+                                      --name subnet1
         ```
         This solution is verbose and counterintuitive. 
 - This can conflict with the newly introduced local context which may automatically populate `--resource-group` and `--vnet-name`
