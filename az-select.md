@@ -49,7 +49,7 @@ WARNING: To create resource within this vnet, you may want to run `az vnet selec
                          --name vnet1
 
 # Without prefix, use resource group JSON (not supported yet, only a proposal)
-> az network vnet create --resource-group $rg
+> az network vnet create --resource-group "$rg"
                          --name vnet1
 ```
 
@@ -93,7 +93,7 @@ Creating a sub-resource doesn't by default switch the prefix either. It is still
                                 --name subnet1
 
 # Without prefix, use vnet JSON (not supported yet, only a proposal)
-> az network vnet subnet create --vnet $vnet
+> az network vnet subnet create --vnet "$vnet"
                                 --name subnet1
 ```
 
