@@ -23,6 +23,11 @@ WARNING: Switched to /subscriptions/0b1f6471-1bf0-4dda-aec3-cb9272f09590/resourc
 # Select by resource ID
 > az select --id /subscriptions/0b1f6471-1bf0-4dda-aec3-cb9272f09590/resourceGroups/rg1
 WARNING: Switched to /subscriptions/0b1f6471-1bf0-4dda-aec3-cb9272f09590/resourceGroups/rg1
+
+# Select by resource JSON
+# $rg is the result of `az group create` or `az group show`
+> az select --json "$rg"
+WARNING: Switched to /subscriptions/0b1f6471-1bf0-4dda-aec3-cb9272f09590/resourceGroups/rg1
 ```
 
 ## Create a resource
@@ -67,6 +72,11 @@ WARNING: Switched to /subscriptions/0b1f6471-1bf0-4dda-aec3-cb9272f09590/resourc
 
 # Select by resource ID
 > az select --id /subscriptions/0b1f6471-1bf0-4dda-aec3-cb9272f09590/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworks/vnet1
+WARNING: Switched to /subscriptions/0b1f6471-1bf0-4dda-aec3-cb9272f09590/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworks/vnet1
+
+# Select by resource JSON
+# $vnet is the result of `az vnet create` or `az vnet show`
+> az select --json "$vnet"
 WARNING: Switched to /subscriptions/0b1f6471-1bf0-4dda-aec3-cb9272f09590/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworks/vnet1
 ```
 
