@@ -43,7 +43,7 @@ no_color = yes
 enable_log_file = no
 ```
 
-This is inconvenient. To improve the user experience, Azure CLI needs to ...
+This is inconvenient. To improve the user experience, `az configure` needs to ...
 
 ## Support set, get and unset
 
