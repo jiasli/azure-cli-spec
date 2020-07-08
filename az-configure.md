@@ -32,7 +32,7 @@ Arguments
                          folder.  Allowed values: global, local.  Default: global.
 ```
 
-For other sections described in [Azure CLI configuration](https://docs.microsoft.com/en-us/cli/azure/azure-cli-configuration?view=azure-cli-latest), users will have to manually edit the `~/.azure/config` file, like 
+For other sections described in [Azure CLI configuration](https://docs.microsoft.com/en-us/cli/azure/azure-cli-configuration?view=azure-cli-latest), users will have to manually edit the `~/.azure/config` file, like
 
 ```ini
 [core]
@@ -52,7 +52,7 @@ These can be implemented in 2 ways:
 ### `git config` convention
 
 ```
-az configure --set ...
+az configure [--set] ...
 az configure --get ...
 az configure --unset ...
 ```
@@ -67,6 +67,8 @@ az config show ...
 az config remove ...
 ```
 
+By using `config`, we can start from scratch and introduce new features without making breaking changes.
+
 ## Support section
 
 However, as Azure CLI doesn't support positional arguments, the config entry has to be prefixed by a parameter name like `--name`.
@@ -80,9 +82,12 @@ Also there is a design decision for how to divide the config entry:
 ### Don't extract anything
 
 ```sh
-az configure --set core.no_color=true  # personally I prefer this format
-# or
+# Use `--set` as an argument
+az configure --set core.no_color=true
+# or use `set` as a sub-command
 az config set --name core.no_color=true
+# or omit `--name` and use positional argument
+az config set core.no_color=true
 ```
 
 ### Extract `--section`
@@ -113,7 +118,7 @@ az config set --section core --name no_color --value true
 
 ## Benefits
 
-This will greatly simplify the configuration process and make experimental features easier to use, like 
+This will greatly simplify the configuration process and make experimental features easier to use, like
 
 ```
 az configure --set core.no_color=true
