@@ -1,4 +1,4 @@
-# A more versatile `az configure`
+# `az config` - A more versatile `az configure`
 
 ## Background knowledge
 
