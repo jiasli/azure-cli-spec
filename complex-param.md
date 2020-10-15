@@ -146,6 +146,6 @@ p2=$(az ... partition-key-property create --name Section --type Int)
 az ... --partition-key-properties p1 p2
 ```
 
-This format can give better help message, because it can provide detailed information for each parameter in  `az ... partition-key-property create`, like `--name` and `--type`.
+This is actually a variation of subcommands. Both this solution and subcommands can give better help message, because it can provide detailed information for parameters, like `--name` and `--type` in  `az ... partition-key-property create`.
 
 ⚠ This will hit the [quoting issues with PowerShell](https://github.com/Azure/azure-cli/blob/dev/doc/quoting-issues-with-powershell.md).
