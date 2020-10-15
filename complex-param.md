@@ -62,6 +62,13 @@ When creating this JSON, use the form of `--tags key=value key=value`.
 
 Tag-like Action use the same form but constructs a list instead a dict. This action is the simplest but won't work if more properties are added, for example it won't be reasonable to use `DeviceId=String=foo=bar`.
 
+## Flatten everything
+
+This is the simplest form without all deliminators, but it highly relies on the order in which arguments are provided. 
+
+```sh
+--partition-key-properties DeviceId String Section Int
+```
 
 ## Direct JSON
 
