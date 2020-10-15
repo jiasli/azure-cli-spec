@@ -1,6 +1,6 @@
 # Mapping between REST API JSON list and CLI command parameter
 
-This thread talks about the mapping between **REST API JSON list** and **CLI command parameter**.
+This article talks about the mapping between **REST API JSON list** and **CLI command parameter**.
 
 For example, the REST API we are translating to CLI command is https://docs.microsoft.com/en-us/rest/api/time-series-insights/management/environments/createorupdate
 
@@ -23,7 +23,9 @@ We want to construct this JSON:
 
 We have following options to translate `partitionKeyProperties` to CLI param `--partition-key-properties`:
 
-## Positional Argument Action, extending `argparse._AppendAction`
+## Possible solutions
+
+### 1. Positional Argument Action, extending `argparse._AppendAction`
 
 ```sh
 --partition-key-properties DeviceId String
@@ -32,7 +34,8 @@ We have following options to translate `partitionKeyProperties` to CLI param `--
 
 This form relies on the position(order) of arguments, so we can't reverse the order and use `String DeviceId` instead. This form is also not friendly to the reader of the command.
 
-## Keyword Argument Action, extending `argparse._AppendAction`
+
+### 2. Keyword Argument Action, extending `argparse._AppendAction`
 
 ```sh
 --partition-key-properties name=DeviceId type=String
@@ -43,7 +46,8 @@ This form relies on the `key=value` structure of arguments. This form is friendl
 
 > The above 2 forms are documented at [Collection Management with Actions](https://github.com/Azure/azure-cli/blob/dev/doc/command_guidelines.md#collection-management-with-actions). ⚠ Note that the sample code is wrong. It should use `setattr()` or call `super()`, instead of `return`. Please check [argparse doc](https://docs.python.org/3/library/argparse.html#action) or the [code in monitor module](https://github.com/Azure/azure-cli/blob/dev/src/azure-cli/azure/cli/command_modules/monitor/actions.py) instead.
 
-## Tag-like Action, extending `argparse.Action`
+
+### 3. Tag-like Action, extending `argparse.Action`
 
 ```sh
 --partition-key-properties DeviceId=String Section=Int
@@ -62,15 +66,17 @@ When creating this JSON, use the form of `--tags key=value key=value`.
 
 Tag-like Action use the same form but constructs a list instead a dict. This action is the simplest but won't work if more properties are added, for example it won't be reasonable to use `DeviceId=String=foo=bar`.
 
-## Flatten everything
 
-This is the simplest form without all deliminators, but it highly relies on the order in which arguments are provided. 
+### 4. Flatten everything, only use whitespace
+
+This is the simplest form without all deliminators, but it highly relies on the order in which arguments are provided.
 
 ```sh
 --partition-key-properties DeviceId String Section Int
 ```
 
-## Direct JSON
+
+### 5. Direct JSON
 
 ```sh
 --partition-key-properties '[{"name":"DeviceId","type":"String"},{"name":"Section","type":"Int"}]'
@@ -79,7 +85,7 @@ This is the simplest form without all deliminators, but it highly relies on the 
 This is the easiest form to implement and auto-gen, but difficult for the user to write.
 
 
-## AWS CLI shorthand syntax
+### 6. AWS CLI shorthand syntax
 
 ```sh
 --partition-key-properties name=DeviceId,type=String name=Section,type=Int
@@ -108,8 +114,7 @@ It corresponds to
       }
 ```
 
-
-### Links for AWS CLI Shorthand Syntax
+#### Links for AWS CLI Shorthand Syntax
 
 AWS CLI uses a term called **Shorthand Syntax** to deal with complex structures. See links below:
 
@@ -119,11 +124,28 @@ AWS CLI uses a term called **Shorthand Syntax** to deal with complex structures.
 * `ParamShorthandParser` source code: https://github.com/aws/aws-cli/blob/bbde9b33381ee4010b2cc3e7fe27b9ba3871893d/awscli/argprocess.py#L274
 
 
-## Subcommands
+### 7. Subcommands
 
 ```sh
-partition-key-properties add --name DeviceId1 --type String1 --defer
-partition-key-properties add --name DeviceId2 --type String2
+az ... partition-key-properties add --name DeviceId --type String --defer
+az ... partition-key-properties add --name Section --type Int
 ```
 
-Subcommands is suitable if the object contains many properties, but difficult to auto-gen.
+Subcommands are suitable if the object contains many properties, but difficult to auto-gen.
+
+
+### 8. Construct objects, like Azure PowerShell
+
+```sh
+p1=$(az ... partition-key-property create --name DeviceId --type String)
+# echo $p1
+# {"name":"DeviceId","type":"String"}
+p2=$(az ... partition-key-property create --name Section --type Int)
+# echo $p2
+# {"name":"Section","type":"Int"}
+az ... --partition-key-properties p1 p2
+```
+
+This format can give better help message, because it can provide detailed information for each parameter in  `az ... partition-key-property create`, like `--name` and `--type`.
+
+⚠ This will hit the [quoting issues with PowerShell](https://github.com/Azure/azure-cli/blob/dev/doc/quoting-issues-with-powershell.md).
