@@ -1,8 +1,8 @@
-# Mapping between REST API JSON list and CLI command parameter
+# Complex parameter support
 
-This article talks about the mapping between **REST API JSON list** and **CLI command parameter**.
+This article talks about supporting complex parameters.
 
-For example, the REST API we are translating to CLI command is https://docs.microsoft.com/en-us/rest/api/time-series-insights/management/environments/createorupdate
+For example, the REST API we are translating to CLI command is [Time Series Insights Environments - Create Or Update](https://docs.microsoft.com/en-us/rest/api/time-series-insights/management(gen1/gen2)/environments/createorupdate).
 
 We want to construct this JSON:
 
@@ -20,6 +20,8 @@ We want to construct this JSON:
       }
     ]
 ```
+
+This is not a basic type but a `list` of `dict`.
 
 We have following options to translate `partitionKeyProperties` to CLI param `--partition-key-properties`:
 
@@ -64,7 +66,7 @@ The result of `az group show` has a `tags` property which is a dict by itself:
 
 When creating this JSON, use the form of `--tags key=value key=value`.
 
-Tag-like Action use the same form but constructs a list instead a dict. This action is the simplest but won't work if more properties are added, for example it won't be reasonable to use `DeviceId=String=foo=bar`.
+Tag-like Action use the same form but constructs a list instead a dict. This action won't be reasonable if more properties are added, for example, `DeviceId=String=foo=bar`.
 
 
 ### 4. Flatten everything, only use whitespace
