@@ -93,7 +93,7 @@ This is the easiest form to implement and auto-gen, but difficult for the user t
 --partition-key-properties name=DeviceId,type=String name=Section,type=Int
 ```
 
-This is a simple form of JSON and is very easy for auto-gen. But, it is not compatible with **Keyword Argument Action**. The different between **Shorthand syntax** and **Keyword Argument Action** is:
+This is a simple form of JSON and is very easy for auto-gen. The argument can also be replaced with JSON directly. But, it is not compatible with **Keyword Argument Action**. The difference between **Shorthand syntax** and **Keyword Argument Action** is:
 
 |Argument Form          |comma(`,`) separates |space(` `) separates |param name(`--partition-key-properties`) appears
 |-                      |-                    | -                   |-
@@ -145,7 +145,7 @@ p1=$(az ... partition-key-property create --name DeviceId --type String)
 p2=$(az ... partition-key-property create --name Section --type Int)
 # echo $p2
 # {"name":"Section","type":"Int"}
-az ... --partition-key-properties p1 p2
+az ... --partition-key-properties "$p1" "$p2"
 ```
 
 This is actually a variation of subcommands. Both this solution and subcommands can give better help message, because it can provide detailed information for parameters, like `--name` and `--type` in  `az ... partition-key-property create`.
