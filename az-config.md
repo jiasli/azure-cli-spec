@@ -95,7 +95,7 @@ az config set core.no_color=true
 ```sh
 az configure --section core --set no_color=true
 # or
-az config --set --section core --name no_color=true
+az config set --section core --name no_color=true
 ```
 
 ### Extract `--value`
